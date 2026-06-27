@@ -28,6 +28,13 @@ jobs:
         if: runner.os == 'macOS'
         run: brew install openssl
 
+      - name: Setup vcpkg (Windows)
+        if: runner.os == 'Windows'
+        run: |
+          git clone https://github.com/Microsoft/vcpkg.git
+          .\vcpkg\bootstrap-vcpkg.bat
+          .\vcpkg\vcpkg install openssl:x64-windows
+
       - name: Build (Linux)
         if: runner.os == 'Linux'
         run: |
@@ -44,7 +51,7 @@ jobs:
         if: runner.os == 'Windows'
         run: |
           mkdir build
-          g++ -std=c++17 -O3 -pthread -o build/hasher.exe hasher.cpp -lcrypto -lssl
+          g++ -std=c++17 -O3 -pthread -o build/hasher.exe hasher.cpp -I.\vcpkg\installed\x64-windows\include -L.\vcpkg\installed\x64-windows\lib -lcrypto -lssl
 
       - name: Upload binaries to Release
         uses: softprops/action-gh-release@v2
