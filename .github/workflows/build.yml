@@ -23,15 +23,19 @@ jobs:
 
       - name: Install OpenSSL (macOS)
         if: runner.os == 'macOS'
-        run: |
-          brew install openssl
-          echo "PKG_CONFIG_PATH=$(brew --prefix openssl)/lib/pkgconfig" >> $GITHUB_ENV
+        run: brew install openssl
 
-      - name: Build (Linux/macOS)
-        if: runner.os != 'Windows'
+      - name: Build (Linux)
+        if: runner.os == 'Linux'
         run: |
           mkdir -p build
           g++ -std=c++17 -O3 -pthread -o build/hasher hasher.cpp -lcrypto -lssl
+
+      - name: Build (macOS)
+        if: runner.os == 'macOS'
+        run: |
+          mkdir -p build
+          g++ -std=c++17 -O3 -pthread -o build/hasher hasher.cpp -I$(brew --prefix openssl)/include -L$(brew --prefix openssl)/lib -lcrypto -lssl
 
       - name: Build (Windows)
         if: runner.os == 'Windows'
