@@ -23,7 +23,9 @@ jobs:
 
       - name: Install OpenSSL (macOS)
         if: runner.os == 'macOS'
-        run: brew install openssl
+        run: |
+          brew install openssl
+          echo "PKG_CONFIG_PATH=$(brew --prefix openssl)/lib/pkgconfig" >> $GITHUB_ENV
 
       - name: Build (Linux/macOS)
         if: runner.os != 'Windows'
