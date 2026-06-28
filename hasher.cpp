@@ -283,7 +283,11 @@ public:
                               OPEN_EXISTING, FILE_FLAG_SEQUENTIAL_SCAN, NULL);
         return handle_ != INVALID_HANDLE_VALUE;
 #else
-        handle_ = ::open(path.c_str(), O_RDONLY | O_LARGEFILE);
+        int flags = O_RDONLY;
+#ifdef __linux__
+        flags |= O_LARGEFILE;
+#endif
+        handle_ = ::open(path.c_str(), flags);
         if (handle_ != -1) {
 #ifdef __linux__
             posix_fadvise(handle_, 0, 0, POSIX_FADV_SEQUENTIAL);
@@ -291,7 +295,7 @@ public:
         }
         return handle_ != -1;
 #endif
-    }
+}
 
     ssize_t read(void* buf, size_t count) {
 #ifdef _WIN32
